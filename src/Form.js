@@ -22,7 +22,8 @@ function Form() {
   const apiKey = "89c246afef2140c580a5908c931b4f93";
   useEffect(() => {
     vatNumberRef.current.focus();
-  }, []);
+  }, [values.vatNumberErr]);
+
   const tryToFillPriceGross = async () => {
     const result = await axios
       .get(
@@ -31,13 +32,10 @@ function Form() {
       .catch((err) => {
         console.log(err);
       });
-    console.log(result);
-    if (result && result.data.valid) {
+    if (result) {
       setValues({
         ...values,
-        companyName: result.data.company.name,
-        address: result.data.company.address,
-        vatNumberErr: false,
+        priceGross: result.data.vat_amount,
       });
       return;
     }
@@ -102,7 +100,11 @@ function Form() {
                 vatNumber: e.target.value,
               });
             }}
-            onBlur={tryToFillAddressAndName}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                tryToFillAddressAndName();
+              }
+            }}
           />
           <TextField
             fullWidth
@@ -121,20 +123,19 @@ function Form() {
             fullWidth
             disabled="true"
             variant={`${values.companyName}` ? "filled" : "outlined"}
-            label="adress"
+            label="address"
             value={values.address}
             endAdornment={<InputAdornment position="end">kg</InputAdornment>}
             onChange={(e) => {
               setValues({
                 ...values,
-                adress: e.target.value,
+                address: e.target.value,
               });
             }}
           />
           <TextField
             fullWidth
             label="Price"
-            endAdornment={<InputAdornment position="end">kg</InputAdornment>}
             value={values.price}
             inputRef={amountRef}
             onChange={(e) => {
@@ -143,7 +144,11 @@ function Form() {
                 price: e.target.value,
               });
             }}
-            onBlur={tryToFillPriceGross}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                tryToFillPriceGross();
+              }
+            }}
           />
           <TextField
             fullWidth
