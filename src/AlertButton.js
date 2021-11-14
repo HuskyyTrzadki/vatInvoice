@@ -1,11 +1,10 @@
 import { Button } from "@mui/material";
 
-function AlertButton({ val }) {
+function AlertButton({}) {
   return (
     <>
       <Button variant="contained" size="small">
         {" "}
-        {val.current}
       </Button>
     </>
   );
