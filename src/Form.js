@@ -1,13 +1,18 @@
 import { TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Checkbox, FormControlLabel } from "@mui/material";
 import debounce from "lodash.debounce";
 
 function Form() {
+  const [checked, setChecked] = useState(false);
+
   const axios = require("axios").default;
   const vatNumberRef = useRef();
   const amountRef = useRef();
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
 
   //?.?.
 
@@ -20,6 +25,12 @@ function Form() {
     vatNumberErr: false,
     countryCode: "",
   });
+  const handleChange = (e) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const apiKey = "4c52ab1ce93b40b3ab8310baf6c68408";
   useEffect(() => {
@@ -98,6 +109,13 @@ function Form() {
             padding: "10px",
           }}
         >
+          <FormControlLabel
+            label="allow edit"
+            control={
+              <Checkbox checked={checked} onChange={handleCheckChange} />
+            }
+          />
+
           <Grid container spacing={3} direction="column" alignItems="center">
             <Grid item>
               <TextField
@@ -108,8 +126,8 @@ function Form() {
                 inputRef={vatNumberRef}
                 helperText={
                   !values.vatNumberErr
-                    ? "based on Vat number, we will pre-populate the rest of the form"
-                    : "wrong Vat nr"
+                    ? "type vat NR, we`ll pre-populate rest"
+                    : "you typed wrong Vat nr try again  "
                 }
                 onChange={handleVatChange}
                 onKeyUp={(e) => {
@@ -122,36 +140,33 @@ function Form() {
             <Grid item>
               <TextField
                 fullWidth
-                disabled="true"
+                disabled={!checked}
                 label="Company Name"
+                name="companyName"
                 variant={`${values.companyName}` ? "filled" : "outlined"}
                 value={values.companyName}
                 onChange={(e) => {
-                  setValues({
-                    ...values,
-                    companyName: e.target.value,
-                  });
+                  handleChange(e);
                 }}
               />
             </Grid>
             <Grid item>
               <TextField
                 fullWidth
-                disabled="true"
+                disabled={!checked}
                 variant={`${values.companyName}` ? "filled" : "outlined"}
+                name="address"
                 label="address"
                 value={values.address}
                 onChange={(e) => {
-                  setValues({
-                    ...values,
-                    address: e.target.value,
-                  });
+                  handleChange(e);
                 }}
               />
             </Grid>
             <Grid item>
               <TextField
                 fullWidth
+                name="Price"
                 label="Price"
                 value={values.price}
                 inputRef={amountRef}
@@ -167,14 +182,12 @@ function Form() {
               <TextField
                 fullWidth
                 helperText=" price gross calculated automatically"
-                disabled="true"
+                disabled={!checked}
+                name="priceGross"
                 value={values.priceGross}
                 variant={`${values.priceGross}` ? "filled" : "outlined"}
                 onChange={(e) => {
-                  setValues({
-                    ...values,
-                    priceGross: e.target.value,
-                  });
+                  handleChange(e);
                 }}
               />
             </Grid>
